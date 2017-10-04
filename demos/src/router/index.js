@@ -8,12 +8,14 @@ import Resnet50 from '../components/models/Resnet50'
 import InceptionV3 from '../components/models/InceptionV3'
 import SqueezenetV1 from '../components/models/SqueezenetV1'
 import ImdbBidirectionalLstm from '../components/models/ImdbBidirectionalLstm'
+import Malha from '../components/models/Malha'
 
 Vue.use(VueRouter)
 
 const router = new VueRouter({
   routes: [
     { path: '/', component: Home },
+    { path: '/malha', component: Malha },
     { path: '/mnist-cnn', component: MnistCnn },
     { path: '/mnist-vae', component: MnistVae },
     { path: '/mnist-acgan', component: MnistAcgan },

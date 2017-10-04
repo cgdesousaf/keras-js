@@ -12,6 +12,13 @@ module.exports = {
     'no-extra-semi': 0,
     'no-unused-vars': 0
   },
+  parserOptions: {
+    "ecmaVersion": 6,
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "modules": true
+    }
+  },
   globals: {
     KerasJS: true,
     TEST_DATA: true,
