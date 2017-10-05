@@ -12,6 +12,14 @@
       <div class="column input-column">
         <div class="input-container">
           <mdl-textfield
+            floating-label="input NCM"
+            v-model="inputNCM"
+            spellcheck="false"
+            textarea
+            rows="2"
+            @input.native="inputChanged"
+          ></mdl-textfield>
+          <mdl-textfield
             floating-label="input text"
             v-model="inputText"
             spellcheck="false"
@@ -102,6 +110,7 @@ export default {
       input: new Float32Array(MAXLEN),
       output: new Float32Array(1),
       inputText: '',
+      inputNCM: '',
       inputTextParsed: [],
       stepwiseOutput: [],
       wordIndex: {},
@@ -145,6 +154,7 @@ export default {
 
   methods: {
     clear: function() {
+      this.inputNCM = ''
       this.inputText = ''
       this.inputTextParsed = []
       this.output = new Float32Array(1)
@@ -174,6 +184,12 @@ export default {
       this.modelRunning = true
       this.isSampleText = false
 
+      let ncm = this.inputNCM.split("");
+      let ncmCode = new Float32Array(8)
+      for(let i = 0; i < 8; i++){
+        ncmCode[i] = ncm[i] / 10
+      }
+
       this.inputTextParsed = this.inputText.trim().toLowerCase().split(/[\s\.,!?]+/gi)
 
       this.input = new Float32Array(MAXLEN)
@@ -191,10 +207,10 @@ export default {
       for (let i = 0; i < codes.length; i++) {
         this.input[i] = codes[i]
       }
+      
+      const inputData = {input: [this.input, ncmCode]}
 
-      console.log(this.input);
-
-      this.model.predict({ input_1: this.input, input_2: new Float32Array(8) }).then(outputData => {
+      this.model.predict(inputData).then(outputData => {
         this.output = outputData.output
         this.stepwiseCalc()
         this.modelRunning = false
