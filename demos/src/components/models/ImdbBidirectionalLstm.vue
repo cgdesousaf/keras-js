@@ -64,9 +64,9 @@ import ops from 'ndarray-ops'
 import Tensor from '../../../../src/Tensor'
 
 const MODEL_FILEPATHS_DEV = {
-  model: '/demos/data/imdb_bidirectional_lstm/imdb_bidirectional_lstm.json',
-  weights: '/demos/data/imdb_bidirectional_lstm/imdb_bidirectional_lstm_weights.buf',
-  metadata: '/demos/data/imdb_bidirectional_lstm/imdb_bidirectional_lstm_metadata.json'
+  model: 'https://transcranial.github.io/keras-js-demos-data/imdb_bidirectional_lstm/imdb_bidirectional_lstm.json',
+  weights: 'https://transcranial.github.io/keras-js-demos-data/imdb_bidirectional_lstm/imdb_bidirectional_lstm_weights.buf',
+  metadata: 'https://transcranial.github.io/keras-js-demos-data/imdb_bidirectional_lstm/imdb_bidirectional_lstm_metadata.json'
 }
 const MODEL_FILEPATHS_PROD = {
   model: 'https://transcranial.github.io/keras-js-demos-data/imdb_bidirectional_lstm/imdb_bidirectional_lstm.json',
@@ -76,9 +76,9 @@ const MODEL_FILEPATHS_PROD = {
 const MODEL_CONFIG = { filepaths: process.env.NODE_ENV === 'production' ? MODEL_FILEPATHS_PROD : MODEL_FILEPATHS_DEV }
 
 const ADDITIONAL_DATA_FILEPATHS_DEV = {
-  wordIndex: '/demos/data/imdb_bidirectional_lstm/imdb_dataset_word_index_top20000.json',
-  wordDict: '/demos/data/imdb_bidirectional_lstm/imdb_dataset_word_dict_top20000.json',
-  testSamples: '/demos/data/imdb_bidirectional_lstm/imdb_dataset_test.json'
+  wordIndex: 'https://transcranial.github.io/keras-js-demos-data/imdb_bidirectional_lstm/imdb_dataset_word_index_top20000.json',
+  wordDict: 'https://transcranial.github.io/keras-js-demos-data/imdb_bidirectional_lstm/imdb_dataset_word_dict_top20000.json',
+  testSamples: 'https://transcranial.github.io/keras-js-demos-data/imdb_bidirectional_lstm/imdb_dataset_test.json'
 }
 const ADDITIONAL_DATA_FILEPATHS_PROD = {
   wordIndex: 'https://transcranial.github.io/keras-js-demos-data/imdb_bidirectional_lstm/imdb_dataset_word_index_top20000.json',
@@ -223,6 +223,8 @@ export default {
 
       this.inputTextParsed = this.inputText.trim().toLowerCase().split(/[\s\.,!?]+/gi)
 
+      console.log(this.inputTextParsed)
+
       this.input = new Float32Array(MAXLEN)
       // by convention, use 2 as OOV word
       // reserve 'index_from' (=3 by default) characters: 0 (padding), 1 (start), 2 (OOV)
@@ -231,10 +233,16 @@ export default {
         const index = this.wordIndex[word]
         return !index ? OOV_WORD_INDEX : index + INDEX_FROM
       })
+
+      console.log(indices)
+
       indices = [START_WORD_INDEX].concat(indices)
       indices = indices.slice(-MAXLEN)
       // padding and truncation (both pre sequence)
       const start = Math.max(0, MAXLEN - indices.length)
+
+      console.log(indices)
+      
       for (let i = start; i < MAXLEN; i++) {
         this.input[i] = indices[i - start]
       }

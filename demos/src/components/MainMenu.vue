@@ -1,77 +1,50 @@
 <template>
   <aside class="menu">
-    <h1>Keras.js Demos</h1>
-    <p class="menu-label">Demos</p>
+    <h1>Malha</h1>
+    <p class="menu-label">Itens</p>
     <ul class="menu-list">
       <li :class="{ active: currentView === 'home' }">
         <a href="#/">Home</a>
       </li>
-      <li :class="{ active: currentView === 'mnist-cnn' }">
-        <a href="#/mnist-cnn">
-          <span class="menu-item-heading">Basic Convnet</span>
-          <span class="menu-item-subheading">MNIST</span>
-        </a>
+      <a v-for="info in goodItems" :href="`#/${info.id}`">
+      <li :class="{ active: currentView === 'malha/${info.id}' }">
+        <span class="menu-item-heading">{{ info.descricao }}</span>
+        <span class="menu-item-subheading">{{ info.NCM }}</span>
       </li>
-      <li :class="{ active: currentView === 'mnist-vae' }">
-        <a href="#/mnist-vae">
-          <span class="menu-item-heading">Convolutional VAE</span>
-          <span class="menu-item-subheading">MNIST</span>
-        </a>
+      </a>
+      <a v-for="info in badItems" :href="`#/${info.id}`">
+      <li :class="{ active: currentView === 'malha/${info.id}' }">
+        <span class="menu-item-heading">{{ info.descricao }}</span>
+        <span class="menu-item-subheading">{{ info.NCM }}</span>
       </li>
-      <li :class="{ active: currentView === 'mnist-acgan' }">
-        <a href="#/mnist-acgan">
-          <span class="menu-item-heading">AC-GAN</span>
-          <span class="menu-item-subheading">MNIST</span>
-        </a>
-      </li>
-      <li :class="{ active: currentView === 'resnet50' }">
-        <a href="#/resnet50">
-          <span class="menu-item-heading">Residual Network (50-layer)</span>
-          <span class="menu-item-subheading">ImageNet</span>
-        </a>
-      </li>
-      <li :class="{ active: currentView === 'inception-v3' }">
-        <a href="#/inception-v3">
-          <span class="menu-item-heading">Inception v3</span>
-          <span class="menu-item-subheading">ImageNet</span>
-        </a>
-      </li>
-      <li :class="{ active: currentView === 'squeezenet-v1.1' }">
-        <a href="#/squeezenet-v1.1">
-          <span class="menu-item-heading">SqueezeNet v1.1</span>
-          <span class="menu-item-subheading">ImageNet</span>
-        </a>
-      </li>
-      <li :class="{ active: currentView === 'imdb-bidirectional-lstm' }">
-        <a href="#/imdb-bidirectional-lstm">
-          <span class="menu-item-heading">Bidirectional LSTM</span>
-          <span class="menu-item-subheading">IMDB</span>
-        </a>
-      </li>
-    </ul>
-    <p class="menu-label">Links</p>
-    <ul class="menu-list github">
-      <li>
-        <a href="https://github.com/transcranial/keras-js" target="_blank">
-          <span class="menu-item-heading">
-            <svg height="24" width="24" class="github-logo" viewBox="0 0 16 16" version="1.1" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"></path></svg>
-            GitHub repo
-          </span>
-        </a>
-      </li>
-    </ul>
-    <p class="menu-label">Contact</p>
-    <ul class="menu-list contact">
-      <li><a href="https://github.com/transcranial" target="_blank">Leon Chen <@transcranial></a></li>
-      <li></li>
+      </a>
     </ul>
   </aside>
 </template>
 
 <script>
+const GOOD_ITEMS = [
+  { id: 0, NCM: '7321.90.00', descricao: 'AGULHA DESENTFOGAO 2PC MULTIUSO', classeEsperada: ''},
+  { id: 1, NCM: '7321.90.00', descricao: 'GRELHA CHUR.ESTANHADA 40X50CM', classeEsperada: ''},
+  { id: 2, NCM: '8451.90.10', descricao: 'CAIXA DO CAMBIO MONDIAL', classeEsperada: ''},
+  { id: 3, NCM: '8451.90.10', descricao: 'RETENTOR DO TANQUE ELECTROLUX LT12', classeEsperada: ''},
+  { id: 4, NCM: '9405.92.00', descricao: 'LUMINARIA TARTARUGA BC OVAL CLEAN', classEsperada: ''}
+]
+
+const BAD_ITEMS = [
+  { id: 5, NCM: '8414.45.20', descricao: 'VENTILADOR ARGE 60CM PAREDE MAX OSCILANTE 6520 PRETO BIVOLT', classeEsperada: ''},
+  { id: 6, NCM: '8414.45.20', descricao: 'VENTILADOR TRON TETO PERA NEW 220V', classeEsperada: ''},
+  { id: 7, NCM: '7321.11.00', descricao: 'FOGAO 4B. ATLAS COLISEUM BR', classeEsperada: ''},
+  { id: 8, NCM: '7321.11.00', descricao: 'CHURRASQ. CHARBROIL IR 3Q A GAS INFRARED', classeEsperada: ''},
+  { id: 9, NCM: '7321.11.00', descricao: 'FOGAO INDUSTRIAL INOX A GAS C 8 BOCAS 300x300', classEsperada: ''}
+]
+
 export default {
   props: {
     currentView: { type: String, default: 'home' }
+  },
+  data: function() {
+    return { goodItems: GOOD_ITEMS, badItems: BAD_ITEMS }
   }
 }
 </script>

@@ -32,18 +32,6 @@
         </div>
       </div>
     </div>
-    <div class="architecture-container" v-if="!modelLoading">
-      <div class="bg-line"></div>
-      <div
-        v-for="(layer, layerIndex) in architectureDiagramLayers"
-        :key="`layer-${layerIndex}`"
-        class="layer"
-        :id="layer.name"
-      >
-        <div class="layer-class-name">{{ layer.className }}</div>
-        <div class="layer-details"> {{ layer.details }}</div>
-      </div>
-    </div>
     <div class="lstm-visualization-container" v-if="!modelLoading && !modelRunning && inputTextParsed.length">
       <div
         v-for="(word, wordIndex) in inputTextParsed"
@@ -79,11 +67,13 @@ const MODEL_FILEPATHS_PROD = {
 const MODEL_CONFIG = { filepaths: process.env.NODE_ENV === 'production' ? MODEL_FILEPATHS_PROD : MODEL_FILEPATHS_DEV }
 
 const ADDITIONAL_DATA_FILEPATHS_DEV = {
+  wordCode: '/demos/data/malha/words.json',
   wordIndex: 'https://transcranial.github.io/keras-js-demos-data/imdb_bidirectional_lstm/imdb_dataset_word_index_top20000.json',
   wordDict: 'https://transcranial.github.io/keras-js-demos-data/imdb_bidirectional_lstm/imdb_dataset_word_dict_top20000.json',
   testSamples: 'https://transcranial.github.io/keras-js-demos-data/imdb_bidirectional_lstm/imdb_dataset_test.json'
 }
 const ADDITIONAL_DATA_FILEPATHS_PROD = {
+  wordCode: '/demos/data/malha/words.json',
   wordIndex: 'https://transcranial.github.io/keras-js-demos-data/imdb_bidirectional_lstm/imdb_dataset_word_index_top20000.json',
   wordDict: 'https://transcranial.github.io/keras-js-demos-data/imdb_bidirectional_lstm/imdb_dataset_word_dict_top20000.json',
   testSamples: 'https://transcranial.github.io/keras-js-demos-data/imdb_bidirectional_lstm/imdb_dataset_test.json'
@@ -99,18 +89,6 @@ const MAXLEN = 1234
 const START_WORD_INDEX = 1
 const OOV_WORD_INDEX = 2
 const INDEX_FROM = 3
-
-// network layers
-const ARCHITECTURE_DIAGRAM_LAYERS = [
-  { name: 'embedding_2', className: 'Embedding', details: '200 time steps, dims 20000 -> 64' },
-  {
-    name: 'bidirectional_2',
-    className: 'Bidirectional [LSTM]',
-    details: '200 time steps, dims 64 -> 32, concat merge, tanh activation, hard sigmoid recurrent activation'
-  },
-  { name: 'dropout_2', className: 'Dropout', details: 'p=0.5 (active during training)' },
-  { name: 'dense_2', className: 'Dense', details: 'output dims 1, sigmoid activation' }
-]
 
 export default {
   props: ['hasWebgl'],
@@ -131,7 +109,6 @@ export default {
       testSamples: [],
       isSampleText: false,
       sampleTextLabel: null,
-      architectureDiagramLayers: ARCHITECTURE_DIAGRAM_LAYERS
     }
   },
 
@@ -174,11 +151,12 @@ export default {
     },
     loadAdditionalData: function() {
       this.modelLoading = true
-      const reqs = ['wordIndex', 'wordDict', 'testSamples'].map(key => {
+      const reqs = ['wordCode', 'wordIndex', 'wordDict', 'testSamples'].map(key => {
         return axios.get(ADDITIONAL_DATA_FILEPATHS[key])
       })
       axios.all(reqs).then(
-        axios.spread((wordIndex, wordDict, testSamples) => {
+        axios.spread((wordCode, wordIndex, wordDict, testSamples) => {
+          this.wordCode = wordCode.data
           this.wordIndex = wordIndex.data
           this.wordDict = wordDict.data
           this.testSamples = testSamples.data
@@ -199,24 +177,24 @@ export default {
       this.inputTextParsed = this.inputText.trim().toLowerCase().split(/[\s\.,!?]+/gi)
 
       this.input = new Float32Array(MAXLEN)
-      // by convention, use 2 as OOV word
-      // reserve 'index_from' (=3 by default) characters: 0 (padding), 1 (start), 2 (OOV)
-      // see https://github.com/fchollet/keras/blob/master/keras/datasets/imdb.py
-      let indices = this.inputTextParsed.map(word => {
-        const index = this.wordIndex[word]
-        return !index ? OOV_WORD_INDEX : index + INDEX_FROM
+
+      let codes = this.inputTextParsed.map(word => {
+        const code = this.wordCode[word]
+        return code
       })
-      indices = [START_WORD_INDEX].concat(indices)
-      indices = indices.slice(-MAXLEN)
+
+      codes = codes.slice(-MAXLEN)
+      codes = String(codes)
+      codes = codes.slice(2,codes.length)
+
       // padding and truncation (both pre sequence)
-      const start = Math.max(0, MAXLEN - indices.length)
-      for (let i = start; i < MAXLEN; i++) {
-        this.input[i] = indices[i - start]
+      for (let i = 0; i < codes.length; i++) {
+        this.input[i] = codes[i]
       }
 
       console.log(this.input);
 
-      this.model.predict({ input: this.input }).then(outputData => {
+      this.model.predict({ input_1: this.input, input_2: new Float32Array(8) }).then(outputData => {
         this.output = outputData.output
         this.stepwiseCalc()
         this.modelRunning = false
